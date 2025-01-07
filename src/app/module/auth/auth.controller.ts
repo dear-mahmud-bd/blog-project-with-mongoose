@@ -5,8 +5,8 @@ import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 
 const register = catchAsync(async (req: Request, res: Response) => {
-  const userdata = req.body;
-  const result = await AuthServices.registerUser(userdata);
+  const userData = req.body;
+  const result = await AuthServices.registerUser(userData);
   sendResponse(res, {
     success: true,
     message: 'User registered successfully',
@@ -15,6 +15,19 @@ const register = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const login = catchAsync(async (req: Request, res: Response) => {
+  const loginData = req.body;
+  const result = await AuthServices.loginUser(loginData);
+
+  sendResponse(res, {
+    success: true,
+    message: 'Login Successful',
+    statusCode: httpStatus.OK,
+    data: result,
+  });
+});
+
 export const AuthControllers = {
   register,
+  login,
 };

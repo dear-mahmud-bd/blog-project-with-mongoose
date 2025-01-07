@@ -19,6 +19,10 @@ export interface TUser {
 
 export interface UserModel extends Model<TUser> {
   isEmailExist(email: string): Promise<TUser>;
+  isPasswordMatched(
+    plainTextPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean>;
 }
 
 export type TUserRole = keyof typeof USER_ROLE;
