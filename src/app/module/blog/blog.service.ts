@@ -16,7 +16,7 @@ const createBlogIntoDB = async (
 };
 
 const getAllBlogsFromDB = async (query: Record<string, unknown>) => {
-  console.log('Q u e r y ->', query);
+  // console.log('Q u e r y ->', query);
   const queryObj = { ...query };
 
   // Searching functionality
@@ -115,7 +115,7 @@ const deleteBlogFromDB = async (id: string, user: AuthenticatedUser) => {
     { $set: { isDeleted: true } },
   );
   if (result.modifiedCount === 0) {
-    throw new Error('Blog is not deleted');
+    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Blog is not deleted');
   }
 
   return {};

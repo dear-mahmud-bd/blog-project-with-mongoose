@@ -21,15 +21,15 @@ export const AuthGuard = (...userRole: TUserRole[]) => {
     ) as JwtPayload;
     // const { email, role } = decoded;
     const user = await User.isEmailExist(decoded.email);
-    if (!user) {
+    if (!user || user == null) {
       throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
     }
     if (user.isBlocked) {
-      throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !');
+      throw new AppError(httpStatus.FORBIDDEN, 'You are blocked !');
     }
 
     if (userRole && !userRole.includes(decoded.role)) {
-      throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!');
+      throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!!');
     }
 
     const { _id, name, email, role } = user;
