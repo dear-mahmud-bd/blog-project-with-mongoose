@@ -32,4 +32,10 @@ export const BlogSchema = new Schema<TBlog>(
   },
 );
 
+// query middlewire...
+BlogSchema.pre('findOne', function (next) {
+  this.findOne({ isDeleted: { $ne: true } }).select('-isDeleted');
+  next();
+});
+
 export const Blog = model<TBlog>('Blog', BlogSchema);

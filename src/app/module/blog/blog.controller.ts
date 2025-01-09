@@ -38,7 +38,36 @@ const getAllBlogs = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
+const updateBlog = catchAsync(async (req, res) => {
+  // console.log('----------------------------',req.user);
+  const { id } = req.params;
+  const updatedBlogData = req.body;
+  const userData = req.user;
+  const result = await BlogServices.updateBlogFromDB(
+    id,
+    updatedBlogData,
+    userData as AuthenticatedUser,
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Blog Updated Successfully',
+    data: {
+      _id: result._id,
+      title: result.title,
+      content: result.content,
+      author: {
+        userID: userData._id,
+        name: userData.name,
+        email: userData.email,
+      },
+    },
+  });
+});
+
 export const BlogControllers = {
   createBlog,
   getAllBlogs,
+  updateBlog,
 };
