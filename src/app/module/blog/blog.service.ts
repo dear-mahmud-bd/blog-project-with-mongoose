@@ -39,13 +39,31 @@ const getAllBlogsFromDB = async (query: Record<string, unknown>) => {
   if (queryObj?.filter) {
     filter.author = queryObj.filter as string;
   }
-
-  // main operation
-  const result = await searchQuery.find(filter).populate('author', {
+  const filterQuery = searchQuery.find(filter).populate('author', {
     _id: 1,
     name: 1,
     email: 1,
   });
+
+  // sorting functionality
+  let sortBy = 'createdAt';
+  if (query?.sortBy) {
+    sortBy = query.sortBy as string;
+  }
+  // accending or decending order
+  if (query?.sortOrder) {
+    const validSortOrders = ['asc', 'desc'];
+    if (!validSortOrders.includes(query.sortOrder as string)) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Invalid sortOrder value. It must be 'asc' or 'desc'.",
+      );
+    }
+    const sortOrder = query.sortOrder === 'desc' ? '-' : '';
+    sortBy = `${sortOrder}${sortBy as string}`;
+  }
+  const result = await filterQuery.sort(sortBy);
+
   return result;
 };
 
