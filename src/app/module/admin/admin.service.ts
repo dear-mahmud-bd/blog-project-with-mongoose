@@ -35,6 +35,7 @@ const blockUserFromSystem = async (
 
   return {};
 };
+
 export const AdminServices = {
   blockUserFromSystem,
 };

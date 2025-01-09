@@ -4,6 +4,7 @@ import { AuthenticatedUser } from '../auth/auth.interface';
 import { Types } from 'mongoose';
 import AppError from '../../errors/AppError';
 import httpStatus from 'http-status';
+import { USER_ROLE } from '../user/user.constant';
 
 const createBlogIntoDB = async (
   payload: TBlogPostRequest,
@@ -105,20 +106,41 @@ const deleteBlogFromDB = async (id: string, user: AuthenticatedUser) => {
     throw new AppError(httpStatus.NOT_FOUND, 'BLog not found');
   }
 
-  const isUpdatable = blogData.author.toString() === user._id.toString();
-  if (!isUpdatable) {
-    throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized access');
-  }
+  // admin control...
+  // console.log(user.role === USER_ROLE.admin);
+  if (user.role == USER_ROLE.admin) {
+    const result = await Blog.updateOne(
+      { _id: new Types.ObjectId(id) },
+      { $set: { isDeleted: true } },
+    );
+    if (result.modifiedCount === 0) {
+      throw new AppError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        'Blog is not deleted',
+      );
+    }
 
-  const result = await Blog.updateOne(
-    { _id: new Types.ObjectId(id) },
-    { $set: { isDeleted: true } },
-  );
-  if (result.modifiedCount === 0) {
-    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Blog is not deleted');
-  }
+    return {};
+  } else {
+    // user control...
+    const isUpdatable = blogData.author.toString() === user._id.toString();
+    if (!isUpdatable) {
+      throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized access');
+    }
 
-  return {};
+    const result = await Blog.updateOne(
+      { _id: new Types.ObjectId(id) },
+      { $set: { isDeleted: true } },
+    );
+    if (result.modifiedCount === 0) {
+      throw new AppError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        'Blog is not deleted',
+      );
+    }
+
+    return {};
+  }
 };
 
 export const BlogServices = {
