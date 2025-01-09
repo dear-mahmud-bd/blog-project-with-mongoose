@@ -50,8 +50,33 @@ const updateBlogFromDB = async (
   return result;
 };
 
+const deleteBlogFromDB = async (id: string, user: AuthenticatedUser) => {
+  const blogData = await Blog.findById({
+    _id: new Types.ObjectId(id),
+  });
+  if (blogData == null) {
+    throw new AppError(httpStatus.NOT_FOUND, 'BLog not found');
+  }
+
+  const isUpdatable = blogData.author.toString() === user._id.toString();
+  if (!isUpdatable) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorized access');
+  }
+
+  const result = await Blog.updateOne(
+    { _id: new Types.ObjectId(id) },
+    { $set: { isDeleted: true } },
+  );
+  if (result.modifiedCount === 0) {
+    throw new Error('Blog is not deleted');
+  }
+
+  return {};
+};
+
 export const BlogServices = {
   createBlogIntoDB,
   getAllBlogsFromDB,
   updateBlogFromDB,
+  deleteBlogFromDB,
 };

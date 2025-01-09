@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { NextFunction, Request, Response } from 'express';
 import { TUserRole } from '../module/user/user.interface';
 import catchAsync from '../utils/catchAsync';
