@@ -15,8 +15,37 @@ const createBlogIntoDB = async (
   return result;
 };
 
-const getAllBlogsFromDB = async () => {
-  const result = await Blog.find();
+const getAllBlogsFromDB = async (query: Record<string, unknown>) => {
+  console.log('Q u e r y ->', query);
+  const queryObj = { ...query };
+
+  // Searching functionality
+  const blogSearchableFields = ['title', 'content'];
+  let search = '';
+  if (query?.search) {
+    search = query.search as string;
+  }
+  const searchQuery = Blog.find({
+    $or: blogSearchableFields.map((field) => ({
+      [field]: { $regex: search, $options: 'i' },
+    })),
+  });
+
+  // Fintering functionality
+  const excludeFields = ['search', 'sortBy', 'sortOrder'];
+  excludeFields.forEach((el) => delete queryObj[el]);
+  // from frontend req as filter=id but it need to convert author=id
+  const filter: Record<string, unknown> = {};
+  if (queryObj?.filter) {
+    filter.author = queryObj.filter as string;
+  }
+
+  // main operation
+  const result = await searchQuery.find(filter).populate('author', {
+    _id: 1,
+    name: 1,
+    email: 1,
+  });
   return result;
 };
 
