@@ -24,6 +24,10 @@ const loginUser = async (payload: TUser) => {
       'Invalid Credentials', // 'Enter your email and password correctly.',
     );
   }
+  if (user.isBlocked) {
+    throw new AppError(httpStatus.UNAUTHORIZED, 'You are blocked!');
+  }
+
   const isMatched = await User.isPasswordMatched(
     payload.password,
     user.password,

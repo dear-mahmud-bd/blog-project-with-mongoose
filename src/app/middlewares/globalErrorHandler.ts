@@ -6,6 +6,9 @@ import { TErrorSources } from '../interface/error';
 import AppError from '../errors/AppError';
 import { ZodError } from 'zod';
 import HandleZodError from '../errors/HandleZodError';
+import HandleValidationError from '../errors/HandleValidationError';
+import HandleCastError from '../errors/HandleCastError';
+import HandleDuplicateError from '../errors/HandleDuplicateError';
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   // eslint-disable-next-line no-console
@@ -23,9 +26,36 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     message = simplifiedError?.message;
     statusCode = simplifiedError?.statusCode;
     errorSources = simplifiedError?.errorSources;
+  } else if (err?.name === 'ValidationError') {
+    // Check Mongoose Validation Error...
+    const simplifiedError = HandleValidationError(err);
+    message = simplifiedError?.message;
+    statusCode = simplifiedError?.statusCode;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err?.name === 'CastError') {
+    // Checking id is valid or not valid
+    const simplifiedError = HandleCastError(err);
+    message = simplifiedError?.message;
+    statusCode = simplifiedError?.statusCode;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err?.code === 11000) {
+    // Errors caused by Mongoose indexing
+    const simplifiedError = HandleDuplicateError(err);
+    message = simplifiedError?.message;
+    statusCode = simplifiedError?.statusCode;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err instanceof SyntaxError) {
+    message = 'An unexpected SyntaxError error occurred!';
+    statusCode = 500;
+    errorSources = [
+      {
+        path: '',
+        message: err?.message,
+      },
+    ];
   } else if (err instanceof AppError) {
-    statusCode = err?.statusCode;
     message = err.message;
+    statusCode = err?.statusCode;
     errorSources = [
       {
         path: '',
@@ -48,7 +78,7 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     message,
     statusCode,
     error: errorSources,
-    // err,
+    // err, // after develop comment this line ...
     stack: config.node_env === 'development' ? err?.stack : null,
   });
 };
