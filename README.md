@@ -173,3 +173,22 @@ src/
 - Method: **POST** ` /api/blogs/:id`
 - Request Header : **Authorization : Bearer <token>**    
 ---
+### Get All Blogs
+- **Method:** **GET** `/api/blogs`
+#### Query Parameters:
+| Parameter   | Type   | Description |
+|------------|--------|-------------|
+| `search`   | string | Search blogs by title or content (e.g., `search=blogtitle`). |
+| `sortBy`   | string | Sort blogs by specific fields such as `createdAt` or `title` (e.g., `sortBy=title`). |
+| `sortOrder` | string | Defines the sorting order. Accepts values `asc` (ascending) or `desc` (descending) (e.g., `sortOrder=desc`). |
+| `filter`   | string | Filter blogs by author ID (e.g., `filter=authorId`). |
+
+### **Admin Actions**  
+#### Block User  
+- Method: **PATCH** `/api/admin/users/:userId/block`  
+- Request Header : **Authorization : Bearer <token>**   
+---
+#### Delete Blog  
+- Method: **DELETE** `api/admin/blogs/:id`  
+- Request Header : **Authorization : Bearer <token>**   
+---
