@@ -19,6 +19,13 @@ const blockUserFromSystem = async (
   if (!user || user == null) {
     throw new AppError(httpStatus.NOT_FOUND, 'User is not found');
   }
+  if (user.role === USER_ROLE.admin) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'You can not block another ADMIN',
+    );
+  }
+
   const isBlocked = user.isBlocked;
   if (isBlocked) {
     throw new AppError(httpStatus.BAD_REQUEST, 'User is already blocked');

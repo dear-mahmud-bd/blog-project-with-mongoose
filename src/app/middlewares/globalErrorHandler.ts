@@ -11,8 +11,7 @@ import HandleCastError from '../errors/HandleCastError';
 import HandleDuplicateError from '../errors/HandleDuplicateError';
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  // eslint-disable-next-line no-console
-  console.log('-------------------------------------->', err);
+  // console.log('-------------------------------------->', err);
   let statusCode = 500;
   let message = 'An unexpected error occurred!';
   let errorSources: TErrorSources = [
@@ -73,7 +72,7 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   }
 
   // ultimate return
-  return res.status(statusCode).json({
+  res.status(statusCode).json({
     success: false,
     message,
     statusCode,

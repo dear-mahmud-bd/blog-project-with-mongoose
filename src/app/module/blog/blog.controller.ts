@@ -40,7 +40,7 @@ const getAllBlogs = catchAsync(async (req, res) => {
 });
 
 const updateBlog = catchAsync(async (req, res) => {
-  // console.log('----------------------------',req.user);
+  // console.log('----------------------------', req.cookies);
   const { id } = req.params;
   const updatedBlogData = req.body;
   const userData = req.user;

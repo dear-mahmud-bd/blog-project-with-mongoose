@@ -3,7 +3,7 @@ import AppError from '../../errors/AppError';
 import { TUser } from '../user/user.interface';
 import { User } from '../user/user.model';
 import httpStatus from 'http-status';
-import jwt from 'jsonwebtoken';
+import { createToken } from './auth.utils';
 
 const registerUser = async (payload: TUser) => {
   if (await User.isEmailExist(payload.email)) {
@@ -43,11 +43,19 @@ const loginUser = async (payload: TUser) => {
     email: payload.email,
     role: user.role,
   };
-  const token = jwt.sign(JwtPayload, config.jwt_access_token as string, {
-    expiresIn: config.jwt_access_token_expires,
-  });
+  const accessToken = createToken(
+    JwtPayload,
+    config.jwt_access_token as string,
+    config.jwt_access_token_expires as string,
+  );
 
-  return { token };
+  const refreshToken = createToken(
+    JwtPayload,
+    config.jwt_refresh_token as string,
+    config.jwt_refresh_token_expires as string,
+  );
+
+  return { accessToken, refreshToken };
 };
 
 export const AuthServices = {

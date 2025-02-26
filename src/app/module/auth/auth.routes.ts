@@ -11,7 +11,7 @@ router.post(
   AuthControllers.register,
 );
 
-router.get(
+router.post(
   '/login',
   validateRequest(AuthValidation.loginValidationSchema),
   AuthControllers.login,
